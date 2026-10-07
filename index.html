@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OB Date — Tuổi thai & BMI</title>
+<meta name="theme-color" content="#147d78"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e4e7ec;--accent:#5b67f1;--accent2:#eef0ff;--ok:#067647;--warn:#b54708;--shadow:0 12px 34px rgba(16,24,40,.08)}
+[data-theme=dark]{--bg:#0e1117;--card:#171b24;--text:#f3f5f7;--muted:#9aa4b2;--line:#2a3140;--accent:#8992ff;--accent2:#222840;--ok:#6ce9a6;--warn:#fec84b;--shadow:none}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:920px;margin:auto;padding:22px 16px 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+h1{font-size:clamp(24px,5vw,36px);margin:0}.sub{color:var(--muted);margin-top:5px}.theme{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:10px 14px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:650px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:700;font-size:14px;margin:0 0 7px} select,input{width:100%;font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}.hidden{display:none!important}
+button.calc{width:100%;border:0;background:var(--accent);color:white;font-weight:800;font-size:16px;padding:13px;border-radius:13px;cursor:pointer;margin-top:15px}
+.result{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}@media(max-width:650px){.result{grid-template-columns:1fr}}
+.metric{padding:14px;border-radius:14px;background:var(--accent2)}.metric small{color:var(--muted);display:block}.metric strong{font-size:21px;display:block;margin-top:4px}
+.note{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.55}.error{color:#d92d20;font-weight:700;margin-top:12px}
+table{width:100%;border-collapse:collapse;margin-top:10px}td{padding:9px 4px;border-bottom:1px solid var(--line)}td:last-child{text-align:right;font-weight:700}
+.badge{display:inline-block;background:var(--accent2);color:var(--accent);font-weight:800;padding:5px 9px;border-radius:999px;font-size:12px}
+
+:root{--accent:#147d78;--accent2:#e9f6f3}
+[data-theme=dark]{--accent:#67d4c7;--accent2:#183c39}
+button{font:inherit}button.calc{background:#147d78;color:#fff}
+.top{flex-wrap:wrap}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin:20px 0;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.tabs button{flex:1;border:0;border-radius:11px;padding:12px 6px;background:transparent;color:var(--muted);cursor:pointer;font-weight:700}
+.tabs button[aria-selected=true]{background:var(--accent2);color:var(--accent)}
+h2{font-size:22px;margin:0 0 14px}th{text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font-size:13px}
+.table-scroll{overflow:auto}table{font-size:14px}td:last-child{text-align:left}.note a{color:var(--accent)}
+dialog{max-width:480px;width:calc(100% - 32px);border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--text);padding:24px}
+dialog::backdrop{background:#0008}.error:empty{display:none}input:focus,select:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+footer{font-size:12px;color:var(--muted);text-align:center;margin-top:24px}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top"><div><h1>OB Date</h1><div class="sub">Tuổi thai, dự sinh & BMI • trợ thủ khi đi lâm sàng</div></div><div class="actions"><button class="theme" id="theme">☾ Tối</button><button class="theme" id="install">↓ Cài đặt</button></div></div>
+<nav class="tabs" role="tablist" aria-label="Công cụ"><button role="tab" id="tab-preg" aria-controls="preg" aria-selected="true">Tuổi thai</button><button role="tab" id="tab-bmi" aria-controls="bmi" aria-selected="false">BMI</button><button role="tab" id="tab-notes" aria-controls="notes" aria-selected="false">Ghi chú</button></nav><section id="preg" role="tabpanel" aria-labelledby="tab-preg">
+<div class="card">
+<div class="grid">
+<div><label>Phương pháp tính</label><select id="method">
+<option value="lmp">Kinh cuối (LMP/KCC)</option>
+<option value="edd">Ngày dự sinh đã biết</option>
+<option value="us">Tuổi thai trên phiếu siêu âm</option><option value="crl">CRL (chiều dài đầu–mông)</option>
+<option value="msd">MSD (đường kính túi thai trung bình)</option>
+<option value="transfer">IVF — ngày chuyển phôi</option>
+<option value="retrieval">IVF — ngày chọc hút noãn / thụ tinh</option>
+</select><div class="help" id="methodHelp"></div></div>
+<div><label>Ngày muốn tính tuổi thai</label><input type="date" id="target"><div class="help">Ví dụ: ngày khám, ngày nhập viện, hoặc hôm nay.</div></div>
+</div>
+<hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+<div id="lmpBox" class="grid"><div><label for="lmp">Ngày đầu kỳ kinh cuối</label><input type="date" id="lmp"></div><div><label for="cycle">Độ dài chu kỳ (ngày)</label><input type="number" id="cycle" min="21" max="35" value="28"><div class="help">Chỉ hiệu chỉnh khi chu kỳ đều, nhớ chắc KCC.</div></div></div>
+<div id="usBox" class="hidden grid"><div><label for="usDate">Ngày siêu âm</label><input type="date" id="usDate"></div><div class="grid"><div><label for="usWeeks">Tuần</label><input type="number" id="usWeeks" min="0" max="42" step="1"></div><div><label for="usDays">Ngày lẻ</label><input type="number" id="usDays" min="0" max="6" step="1" value="0"></div></div></div>
+<div id="eddBox" class="hidden"><label>Ngày dự sinh (EDD/NDS)</label><input type="date" id="edd"></div>
+<div id="crlBox" class="hidden grid"><div><label>Ngày siêu âm</label><input type="date" id="crlDate"></div><div><label>CRL (mm)</label><input type="number" id="crl" min="1" max="100" step=".1" placeholder="VD: 56"></div></div>
+<div id="msdBox" class="hidden grid"><div><label>Ngày siêu âm</label><input type="date" id="msdDate"></div><div><label>MSD (mm)</label><input type="number" id="msd" min="1" max="60" step=".1" placeholder="VD: 12"></div></div>
+<div id="transferBox" class="hidden grid"><div><label>Ngày chuyển phôi</label><input type="date" id="transferDate"></div><div><label>Tuổi phôi khi chuyển</label><select id="embryoAge"><option value="5">Phôi ngày 5 (blastocyst)</option><option value="3">Phôi ngày 3</option><option value="6">Phôi ngày 6</option><option value="2">Phôi ngày 2</option></select></div></div>
+<div id="retrievalBox" class="hidden"><label>Ngày chọc hút noãn / thụ tinh</label><input type="date" id="retrievalDate"></div>
+<button class="calc" onclick="calculate()">Tính ngay</button><div id="error" class="error"></div>
+</div>
+<div class="card hidden" id="out">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><b>Kết quả</b><span class="badge" id="basis"></span></div>
+<div class="result"><div class="metric"><small>Tuổi thai tại ngày đã chọn</small><strong id="ga"></strong><span id="daysTotal"></span></div><div class="metric"><small>Ngày dự sinh</small><strong id="due"></strong></div><div class="metric"><small>KCC quy đổi</small><strong id="equivLmp"></strong></div></div>
+<table><tr><td>Ngày thụ thai ước tính</td><td id="conception"></td></tr><tr><td>Bắt đầu tam cá nguyệt II (14+0)</td><td id="t2"></td></tr><tr><td>Bắt đầu tam cá nguyệt III (28+0)</td><td id="t3"></td></tr><tr><td>Đủ tháng sớm (37+0)</td><td id="term"></td></tr><tr><td>40+0</td><td id="forty"></td></tr></table>
+<div class="note" id="note"></div>
+</div>
+<div class="card"><b>Lưu ý chuyên môn</b><div class="note">Công cụ dùng để học và hỗ trợ kiểm tra ngày tháng. KCC giả định chu kỳ 28 ngày nếu không hiệu chỉnh. CRL dùng công thức Robinson–Fleming; MSD chỉ là ước tính sớm và kém chính xác hơn CRL, không nên dùng đơn độc để thay đổi ngày dự sinh khi đã có phương pháp định tuổi thai tốt hơn. Với IVF, tuổi thai được quy ước từ “KCC tương đương”, không phải tuổi thật của phôi.</div></div>
+</section>
+<section id="bmi" class="hidden" role="tabpanel" aria-labelledby="tab-bmi">
+<div class="card"><h2>Tính chỉ số BMI</h2><p class="note">Dành cho người trưởng thành. Trong sản khoa, nhập cân nặng trước mang thai để phân loại BMI trước thai kỳ.</p><div class="grid"><div><label for="weight">Cân nặng (kg)</label><input id="weight" type="number" min="20" max="400" step="0.1" placeholder="Ví dụ: 55"></div><div><label for="height">Chiều cao (cm)</label><input id="height" type="number" min="100" max="250" step="0.1" placeholder="Ví dụ: 160"></div></div><button class="calc" id="calcBmi">Tính BMI</button><div class="error" id="bmiError" role="alert"></div>
+<div id="bmiResult" class="hidden"><div class="metric" style="margin-top:16px"><small>BMI (kg/m²)</small><strong id="bmiValue"></strong><span id="bmiClass"></span></div></div>
+<p class="note">BMI = cân nặng (kg) / chiều cao (m)². Phân loại WHO quốc tế: &lt;18,5 thiếu cân; 18,5–&lt;25 bình thường; 25–&lt;30 thừa cân; ≥30 béo phì. Không phân loại BMI người lớn cho trẻ em hoặc dùng cân nặng đang mang thai để đánh giá BMI trước thai kỳ. <a href="https://www.who.int/data/gho/data/themes/topics/indicator-groups/indicator-group-details/GHO/bmi-among-adults" target="_blank" rel="noopener">Nguồn WHO</a>.</p></div></section>
+<section id="notes" class="hidden" role="tabpanel" aria-labelledby="tab-notes"><div class="card"><h2>Đối chiếu KCC và siêu âm</h2><p class="note">Chép theo bảng trong ảnh em gửi. “Hơn” nghĩa là &gt;, không phải ≥. Đây là ngưỡng chênh lệch để cân nhắc định lại ngày dự sinh, không phải sai số của phép tính.</p><div class="table-scroll"><table><thead><tr><th>Tuổi thai khảo sát</th><th>Thông số</th><th>Chênh lệch theo ảnh</th></tr></thead><tbody>
+<tr><td>≤8 tuần 6 ngày</td><td>CRL</td><td>&gt;5 ngày</td></tr>
+<tr><td>9 tuần 0 ngày – 13 tuần 6 ngày</td><td>CRL</td><td>&gt;7 ngày</td></tr>
+<tr><td>14 tuần 0 ngày – 15 tuần 6 ngày</td><td>BPD, HC, AC, FL</td><td>&gt;7 ngày</td></tr>
+<tr><td>16 tuần 0 ngày – 21 tuần 6 ngày</td><td>BPD, HC, AC, FL</td><td>&gt;9 ngày</td></tr>
+<tr><td>22 tuần 0 ngày – 27 tuần 6 ngày</td><td>BPD, HC, AC, FL</td><td>&gt;14 ngày</td></tr>
+<tr><td>≥28 tuần 0 ngày</td><td>BPD, HC, AC, FL</td><td>&gt;21 ngày</td></tr></tbody></table></div>
+<p class="note">Ảnh ghi dòng cuối “22 tuần + 0 ngày và lớn hơn”, trùng với dòng trước. Bảng trên tách từ 28+0 để không chồng lấn; cần đối chiếu lại bản gốc/phác đồ của cơ sở. ACOG dùng &gt;10 ngày ở 16+0–21+6 và &gt;21 ngày từ 28+0. <a href="https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2017/05/methods-for-estimating-the-due-date" target="_blank" rel="noopener">Đối chiếu ACOG</a>.</p>
+<p class="note">CRL: chiều dài đầu–mông · BPD: đường kính lưỡng đỉnh · HC: chu vi đầu · AC: chu vi bụng · FL: chiều dài xương đùi.</p></div><div class="card"><h2>Chọn mốc định tuổi thai</h2><p class="note">Siêu âm quý I bằng CRL là phương pháp chính xác nhất để xác lập hoặc xác nhận tuổi thai. Với IVF, dùng ngày chuyển và tuổi phôi. Khi đã xác lập ngày dự sinh bằng mốc tin cậy, không tự đổi theo siêu âm muộn; siêu âm quý III có thể nhầm thai chậm tăng trưởng với thai nhỏ tuổi.</p><p class="note">MSD chỉ là ước tính học tập (số ngày ≈ MSD mm + 30); ACOG không khuyến nghị MSD để xác lập ngày dự sinh. Công cụ không tự quyết định đổi ngày dự sinh.</p></div></section>
+<dialog id="installHelp"><h2>Cài lên màn hình chính</h2><p id="installText"></p><p class="note">Sau lần mở web có mạng đầu tiên và tải xong dữ liệu, ứng dụng có thể dùng ngoại tuyến. Không cần đăng nhập; chỉ lưu chế độ sáng/tối trên máy.</p><button class="theme" id="closeInstall">Đã hiểu</button></dialog><footer>OB Date · Tính trên thiết bị · Không gửi dữ liệu bệnh nhân</footer></div>
+<script>
+const $=x=>document.getElementById(x), DAY=86400000;
+function date(s){if(!s)return null;let [y,m,d]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,d))}
+function add(d,n){return new Date(d.getTime()+n*DAY)} function diff(a,b){return Math.round((a-b)/DAY)}
+function fmt(d){return new Intl.DateTimeFormat('vi-VN',{timeZone:'UTC',day:'2-digit',month:'2-digit',year:'numeric'}).format(d)}
+function isoToday(){let d=new Date(); return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+$('target').value=isoToday();
+const boxes=['lmp','edd','us','crl','msd','transfer','retrieval'];
+const helps={
+us:'Nhập tuổi thai được ghi trên phiếu cùng ngày siêu âm; không nhập BPD/HC/AC/FL vào ô CRL.',
+lmp:'Chu kỳ 28 ngày: NDS = KCC + 280 ngày; chu kỳ đều khác 28 ngày được hiệu chỉnh.',
+edd:'Quy ngược tuổi thai từ ngày dự sinh đã được xác lập.',
+crl:'Nhập CRL đo ở siêu âm quý I. Công thức Robinson–Fleming.',
+msd:'Ước tính tuổi thai rất sớm từ MSD; độ chính xác hạn chế.',
+transfer:'Quy ước tuổi thai ngày chuyển = 14 ngày + tuổi phôi.',
+retrieval:'Ngày chọc hút noãn/thụ tinh được xem tương đương ngày thụ thai.'
+};
+function switchBox(){let m=$('method').value;boxes.forEach(x=>$(x+'Box').classList.toggle('hidden',x!==m));$('methodHelp').textContent=helps[m];$('out').classList.add('hidden');$('error').textContent=''}
+$('method').onchange=switchBox; switchBox();
+function calculate(){
+try{
+let m=$('method').value,target=date($('target').value); if(!target)throw Error('Em chọn ngày muốn tính tuổi thai trước nha.');
+let lmp,basis='',note='';
+if(m==='lmp'){lmp=date($('lmp').value);if(!lmp)throw Error('Chưa nhập KCC.');let cycle=Number($('cycle').value);if(!Number.isInteger(cycle)||cycle<21||cycle>35)throw Error('Chu kỳ phải là số nguyên từ 21–35 ngày.');lmp=add(lmp,cycle-28);basis='Theo KCC';note='KCC chuẩn thường phù hợp nhất khi nhớ chắc ngày và chu kỳ tương đối đều.'}
+if(m==='edd'){let e=date($('edd').value);if(!e)throw Error('Chưa nhập ngày dự sinh.');lmp=add(e,-280);basis='Theo NDS đã biết';note='Tuổi thai được quy ngược từ ngày dự sinh đã nhập.'}
+if(m==='us'){let sd=date($('usDate').value),w=Number($('usWeeks').value),d=Number($('usDays').value);if(!sd||$('usWeeks').value===''||$('usDays').value===''||!Number.isInteger(w)||!Number.isInteger(d)||w<0||w>42||d<0||d>6)throw Error('Nhập ngày siêu âm, tuần 0–42 và ngày lẻ 0–6.');lmp=add(sd,-(7*w+d));basis='Theo phiếu siêu âm';note='Dùng tuổi thai trên phiếu để quy đổi ngày tháng; cần chọn mốc siêu âm đáng tin cậy.'}
+if(m==='crl'){let sd=date($('crlDate').value),c=parseFloat($('crl').value);if(!sd||!c)throw Error('Nhập ngày siêu âm và CRL.');if(c<2||c>84)throw Error('CRL ngoài khoảng 2–84 mm của bộ tính này.');let gaDays=Math.round(8.052*Math.sqrt(c)+23.73);lmp=add(sd,-gaDays);basis='Theo CRL';note=`CRL ${c} mm → tuổi thai siêu âm xấp xỉ ${Math.floor(gaDays/7)} tuần ${gaDays%7} ngày tại ngày đo.`}
+if(m==='msd'){let sd=date($('msdDate').value),v=parseFloat($('msd').value);if(!sd||!v)throw Error('Nhập ngày siêu âm và MSD.');if(!Number.isFinite(v)||v<2||v>25)throw Error('Bộ tính MSD sớm chỉ nhận 2–25 mm.');let gaDays=Math.round(v+30);lmp=add(sd,-gaDays);basis='Theo MSD';note=`MSD ${v} mm → ước tính khoảng ${Math.floor(gaDays/7)} tuần ${gaDays%7} ngày. MSD là phương pháp ước tính, không chính xác bằng CRL.`}
+if(m==='transfer'){let td=date($('transferDate').value),age=parseInt($('embryoAge').value);if(!td)throw Error('Chưa nhập ngày chuyển phôi.');lmp=add(td,-(14+age));basis=`IVF • phôi ngày ${age}`;note=`Ngày chuyển phôi được quy ước tuổi thai ${2} tuần ${age} ngày.`}
+if(m==='retrieval'){let rd=date($('retrievalDate').value);if(!rd)throw Error('Chưa nhập ngày chọc hút noãn/thụ tinh.');lmp=add(rd,-14);basis='IVF • chọc hút noãn';note='Ngày chọc hút noãn/thụ tinh được quy ước tương đương tuổi thai 2 tuần 0 ngày.'}
+let gd=diff(target,lmp); if(gd<0)throw Error('Ngày muốn tính nằm trước mốc thai kỳ quy đổi.');
+if(gd>315)throw Error('Kết quả vượt 45 tuần; kiểm tra lại ngày và năm đã nhập.');let w=Math.floor(gd/7),dd=gd%7,due=add(lmp,280);
+$('ga').textContent=`${w} tuần ${dd} ngày`;$('daysTotal').textContent=`${gd} ngày thai`;
+$('due').textContent=fmt(due);$('equivLmp').textContent=fmt(lmp);$('conception').textContent=fmt(add(lmp,14));
+$('t2').textContent=fmt(add(lmp,98));$('t3').textContent=fmt(add(lmp,196));$('term').textContent=fmt(add(lmp,259));$('forty').textContent=fmt(due);
+$('basis').textContent=basis;$('note').textContent=note;$('error').textContent='';$('out').classList.remove('hidden');
+}catch(e){$('error').textContent=e.message;$('out').classList.add('hidden')}
+}
+$('theme').onclick=()=>{let dark=document.documentElement.dataset.theme==='dark';document.documentElement.dataset.theme=dark?'light':'dark';$('theme').textContent=dark?'☾ Tối':'☀ Sáng';localStorage.setItem('obtheme',dark?'light':'dark')}
+function setTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'☀ Sáng':'☾ Tối';try{localStorage.setItem('obtheme',t)}catch{}}
+$('theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+try{setTheme(localStorage.getItem('obtheme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))}catch{setTheme('light')}
+for(const name of ['preg','bmi','notes']){$('tab-'+name).onclick=()=>{for(const n of ['preg','bmi','notes']){$(n).classList.toggle('hidden',n!==name);$('tab-'+n).setAttribute('aria-selected',String(n===name));}}}
+$('calcBmi').onclick=()=>{let kg=Number($('weight').value),cm=Number($('height').value);$('bmiResult').classList.add('hidden');if(!Number.isFinite(kg)||!Number.isFinite(cm)||kg<20||kg>400||cm<100||cm>250){$('bmiError').textContent='Nhập cân nặng 20–400 kg và chiều cao 100–250 cm.';return}let b=kg*10000/(cm*cm);$('bmiError').textContent='';$('bmiValue').textContent=b.toFixed(2);$('bmiClass').textContent=b<18.5?'Thiếu cân':b<25?'Bình thường':b<30?'Thừa cân':b<35?'Béo phì độ I':b<40?'Béo phì độ II':'Béo phì độ III';$('bmiResult').classList.remove('hidden')};
+let installPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e});
+window.addEventListener('appinstalled',()=>{installPrompt=null;$('install').textContent='Đã cài'});
+$('install').onclick=async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;return}
+$('installText').textContent=location.protocol==='file:'?'Để cài ứng dụng, hãy mở bản web qua HTTPS. File tải về vẫn dùng được để tính trực tiếp.':matchMedia('(display-mode: standalone)').matches?'Ứng dụng đã mở ở chế độ độc lập.':/iPad|iPhone|iPod/.test(navigator.userAgent)?'Mở bằng Safari → Chia sẻ → Thêm vào Màn hình chính.':'Mở bằng Chrome → menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính. Nếu chưa thấy, tải lại trang sau lần mở đầu tiên.';
+$('installHelp').showModal()};
+$('closeInstall').onclick=()=>$('installHelp').close();
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+// Gắn nhãn cho các ô của bản gốc.
+document.querySelectorAll('input,select').forEach(el=>{let label=el.previousElementSibling;if(label&&label.tagName==='LABEL')label.htmlFor=el.id});
+$('error').setAttribute('role','alert');
+</script></body></html>
