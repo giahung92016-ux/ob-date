@@ -50,11 +50,17 @@ footer{font-size:12px;color:var(--muted);text-align:center;margin-top:24px}
 .history-item.is-done strong{color:var(--ok)}.history-item.is-skipped{opacity:.65}
 .history-alert{border-left:4px solid var(--warn);padding:12px;background:var(--accent2);border-radius:8px;font-size:13px;line-height:1.6}
 #historyEmpty{padding:16px;color:var(--ok)}
+
+.tabs{overflow-x:auto;scrollbar-width:thin}.tabs button{flex:1 0 auto;white-space:nowrap}
+.unit-input{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:8px}
+.formula-box{padding:12px;border-radius:12px;background:var(--accent2);font-size:14px;line-height:1.6}
+.calc-warning{margin-top:14px;border-left:4px solid var(--warn);padding:10px 12px;background:var(--accent2);border-radius:8px;font-size:13px;line-height:1.6}
+@media(max-width:450px){.tabs button{font-size:13px;padding:12px 10px}.unit-input{grid-template-columns:minmax(0,1fr) 95px}}
 </style>
 </head>
 <body><div class="wrap">
 <div class="top"><div><h1>OB Date</h1><div class="sub">Tuổi thai, dự sinh & BMI • trợ thủ khi đi lâm sàng</div></div><div class="actions"><button class="theme" id="theme">☾ Tối</button><button class="theme" id="install">↓ Cài đặt</button></div></div>
-<nav class="tabs" role="tablist" aria-label="Công cụ"><button role="tab" id="tab-preg" aria-controls="preg" aria-selected="true">Tuổi thai</button><button role="tab" id="tab-bmi" aria-controls="bmi" aria-selected="false">BMI</button><button role="tab" id="tab-notes" aria-controls="notes" aria-selected="false">Ghi chú</button><button role="tab" id="tab-history" aria-controls="history" aria-selected="false">Hỏi bệnh</button></nav><section id="preg" role="tabpanel" aria-labelledby="tab-preg">
+<nav class="tabs" role="tablist" aria-label="Công cụ"><button role="tab" id="tab-preg" aria-controls="preg" aria-selected="true">Tuổi thai</button><button role="tab" id="tab-bmi" aria-controls="bmi" aria-selected="false">BMI</button><button role="tab" id="tab-bsa" aria-controls="bsa" aria-selected="false">BSA / AUC</button><button role="tab" id="tab-notes" aria-controls="notes" aria-selected="false">Ghi chú</button><button role="tab" id="tab-history" aria-controls="history" aria-selected="false">Hỏi bệnh</button></nav><section id="preg" role="tabpanel" aria-labelledby="tab-preg">
 <div class="card">
 <div class="grid">
 <div><label>Phương pháp tính</label><select id="method">
@@ -89,6 +95,31 @@ footer{font-size:12px;color:var(--muted);text-align:center;margin-top:24px}
 <div class="card"><h2>Tính chỉ số BMI</h2><p class="note">Dành cho người trưởng thành. Trong sản khoa, nhập cân nặng trước mang thai để phân loại BMI trước thai kỳ.</p><div class="grid"><div><label for="weight">Cân nặng (kg)</label><input id="weight" type="number" min="20" max="400" step="0.1" placeholder="Ví dụ: 55"></div><div><label for="height">Chiều cao (cm)</label><input id="height" type="number" min="100" max="250" step="0.1" placeholder="Ví dụ: 160"></div></div><button class="calc" id="calcBmi">Tính BMI</button><div class="error" id="bmiError" role="alert"></div>
 <div id="bmiResult" class="hidden"><div class="metric" style="margin-top:16px"><small>BMI (kg/m²)</small><strong id="bmiValue"></strong><span id="bmiClass"></span></div></div>
 <p class="note">BMI = cân nặng (kg) / chiều cao (m)². Phân loại WHO quốc tế: &lt;18,5 thiếu cân; 18,5–&lt;25 bình thường; 25–&lt;30 thừa cân; ≥30 béo phì. Không phân loại BMI người lớn cho trẻ em hoặc dùng cân nặng đang mang thai để đánh giá BMI trước thai kỳ. <a href="https://www.who.int/data/gho/data/themes/topics/indicator-groups/indicator-group-details/GHO/bmi-among-adults" target="_blank" rel="noopener">Nguồn WHO</a>.</p></div></section>
+<section id="bsa" class="hidden" role="tabpanel" aria-labelledby="tab-bsa">
+<div class="card" id="bsaCard"><h2>Diện tích bề mặt cơ thể</h2><span class="badge">Du Bois · tham khảo MSD</span>
+<p class="note">Nhập chiều cao và cân nặng, kiểm tra đơn vị trước khi tính.</p>
+<div class="grid"><div><label for="bsaHeight">Chiều cao</label><div class="unit-input"><input id="bsaHeight" type="number" step="any" min="0" inputmode="decimal" placeholder="Ví dụ: 165"><select id="bsaHeightUnit" aria-label="Đơn vị chiều cao"><option value="cm">cm</option><option value="in">inch</option></select></div></div>
+<div><label for="bsaWeight">Cân nặng</label><div class="unit-input"><input id="bsaWeight" type="number" step="any" min="0" inputmode="decimal" placeholder="Ví dụ: 62"><select id="bsaWeightUnit" aria-label="Đơn vị cân nặng"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
+<div><label for="bsaPrecision">Số chữ số thập phân</label><select id="bsaPrecision"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div></div>
+<button class="calc" id="calcBsa">Tính BSA</button><div id="bsaError" class="error" role="alert"></div>
+<div id="bsaResult" class="hidden" aria-live="polite"><div class="metric" style="margin-top:16px"><small>Diện tích bề mặt cơ thể (BSA)</small><strong id="bsaValue"></strong></div><p class="note" id="bsaDetail"></p></div>
+<p class="formula-box">BSA (m²) = 0,007184 × chiều cao (cm)<sup>0,725</sup> × cân nặng (kg)<sup>0,425</sup></p>
+<p class="note"><a href="https://www.msdmanuals.com/iframe/manual/medical-calculators/bodysurfacearea.htm" target="_blank" rel="noopener">MSD — Body Surface Area (Du Bois Method)</a>. Bộ tính viết lại theo công thức, không sao chép giao diện MSD.</p></div>
+<div class="card" id="carboCard"><h2>Carboplatin theo AUC</h2><span class="badge">Calvert + Cockcroft–Gault · tham khảo Medscape</span>
+<p class="note">Tính cho người lớn có chức năng thận ổn định. Nhập AUC mục tiêu do phác đồ/bác sĩ chỉ định; bộ tính không chọn phác đồ.</p>
+<div class="grid"><div><label for="carboAge">Tuổi (năm)</label><input id="carboAge" type="number" min="18" max="120" step="1" inputmode="numeric" placeholder="Ví dụ: 60"></div>
+<div><label for="carboSex">Hệ số giới tính trong Cockcroft–Gault</label><select id="carboSex"><option value="">Chọn hệ số</option><option value="female">Nữ (×0,85)</option><option value="male">Nam (×1)</option></select></div>
+<div><label for="carboWeight">Cân nặng dùng trong công thức</label><div class="unit-input"><input id="carboWeight" type="number" min="0" step="any" inputmode="decimal" placeholder="Ví dụ: 62"><select id="carboWeightUnit" aria-label="Đơn vị cân nặng Carboplatin"><option value="kg">kg</option><option value="lb">lb</option></select></div><div class="help">Nhập loại cân nặng được phác đồ yêu cầu. Không tự đổi sang cân nặng lý tưởng/hiệu chỉnh.</div></div>
+<div><label for="carboCreat">Creatinin huyết thanh</label><div class="unit-input"><input id="carboCreat" type="number" min="0" step="any" inputmode="decimal" placeholder="Ví dụ: 1"><select id="carboCreatUnit" aria-label="Đơn vị creatinin"><option value="mgdl">mg/dL</option><option value="umol">µmol/L</option></select></div></div>
+<div><label for="carboAuc">AUC mục tiêu (mg·phút/mL)</label><input id="carboAuc" type="number" min="0" step="any" inputmode="decimal" placeholder="Theo phác đồ, ví dụ: 5"></div></div>
+<button class="calc" id="calcCarbo">Tính liều theo công thức</button><div id="carboError" class="error" role="alert"></div>
+<div id="carboResult" class="hidden" aria-live="polite"><div class="result" style="margin-top:16px"><div class="metric"><small>Liều Carboplatin tính toán</small><strong id="carboDose"></strong><span>mg tổng liều, không phải mg/m²</span></div><div class="metric"><small>CrCl ước tính (Cockcroft–Gault)</small><strong id="carboCrcl"></strong><span>mL/phút; dùng làm giá trị ước tính trong Calvert</span></div></div><p class="note" id="carboDetail"></p><div id="carboWarning" class="calc-warning hidden"></div></div>
+<p class="formula-box">CrCl = [(140 − tuổi) × cân nặng (kg)] / [72 × creatinin (mg/dL)] × hệ số giới tính.<br>Liều (mg) = AUC mục tiêu × [CrCl ước tính (mL/phút) + 25].</p>
+<p class="note">Creatinin µmol/L ÷ 88,4 = mg/dL. Tính bằng giá trị đầy đủ; kết quả liều hiển thị đến 0,1 mg, chưa làm tròn theo quy trình pha thuốc.</p>
+<div class="calc-warning">Không dùng bộ tính này cho người lọc máu, tổn thương thận cấp hoặc creatinin chưa ổn định. CrCl là ước tính, không đồng nhất với GFR đo trực tiếp. Bác sĩ/dược sĩ ung bướu cần xác nhận AUC, cách chọn cân nặng và chức năng thận trước khi kê/pha thuốc.</div>
+<p class="note">Không tự áp trần CrCl 125 mL/phút hoặc nâng creatinin tối thiểu; nếu phác đồ yêu cầu hiệu chỉnh, cần đối chiếu riêng. Không nhập eGFR (mL/phút/1,73 m²) vào ô creatinin.</p>
+<p class="note"><a href="https://reference.medscape.com/calculator/169/carboplatin-auc-dosing-calvert" target="_blank" rel="noopener">Medscape / QxMD — Carboplatin AUC Dosing (Calvert)</a> · <a href="https://www.eviq.org.au/clinical-resources/eviq-calculators/4171-carboplatin-dose-calculator" target="_blank" rel="noopener">eviQ — đối chiếu chức năng thận và công thức</a>. Công cụ hỗ trợ học và kiểm tra phép tính; không phải y lệnh.</p>
+</div></section>
 <section id="notes" class="hidden" role="tabpanel" aria-labelledby="tab-notes"><div class="card"><h2>Đối chiếu KCC và siêu âm</h2><p class="note">Chép theo bảng trong ảnh em gửi. “Hơn” nghĩa là &gt;, không phải ≥. Đây là ngưỡng chênh lệch để cân nhắc định lại ngày dự sinh, không phải sai số của phép tính.</p><div class="table-scroll"><table><thead><tr><th>Tuổi thai khảo sát</th><th>Thông số</th><th>Chênh lệch theo ảnh</th></tr></thead><tbody>
 <tr><td>≤8 tuần 6 ngày</td><td>CRL</td><td>&gt;5 ngày</td></tr>
 <tr><td>9 tuần 0 ngày – 13 tuần 6 ngày</td><td>CRL</td><td>&gt;7 ngày</td></tr>
@@ -152,7 +183,7 @@ $('theme').onclick=()=>{let dark=document.documentElement.dataset.theme==='dark'
 function setTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'☀ Sáng':'☾ Tối';try{localStorage.setItem('obtheme',t)}catch{}}
 $('theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 try{setTheme(localStorage.getItem('obtheme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))}catch{setTheme('light')}
-for(const name of ['preg','bmi','notes','history']){$('tab-'+name).onclick=()=>{for(const n of ['preg','bmi','notes','history']){$(n).classList.toggle('hidden',n!==name);$('tab-'+n).setAttribute('aria-selected',String(n===name));}}}
+for(const name of ['preg','bmi','bsa','notes','history']){$('tab-'+name).onclick=()=>{for(const n of ['preg','bmi','bsa','notes','history']){$(n).classList.toggle('hidden',n!==name);$('tab-'+n).setAttribute('aria-selected',String(n===name));}}}
 $('calcBmi').onclick=()=>{let kg=Number($('weight').value),cm=Number($('height').value);$('bmiResult').classList.add('hidden');if(!Number.isFinite(kg)||!Number.isFinite(cm)||kg<20||kg>400||cm<100||cm>250){$('bmiError').textContent='Nhập cân nặng 20–400 kg và chiều cao 100–250 cm.';return}let b=kg*10000/(cm*cm);$('bmiError').textContent='';$('bmiValue').textContent=b.toFixed(2);$('bmiClass').textContent=b<18.5?'Thiếu cân':b<25?'Bình thường':b<30?'Thừa cân':b<35?'Béo phì độ I':b<40?'Béo phì độ II':'Béo phì độ III';$('bmiResult').classList.remove('hidden')};
 let installPrompt;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e});
@@ -205,5 +236,32 @@ $('resetHistory').onclick=()=>$('resetHistoryDialog').showModal();
 $('cancelResetHistory').onclick=()=>$('resetHistoryDialog').close();
 $('confirmResetHistory').onclick=()=>{historyStates[$('historyType').value]={};$('resetHistoryDialog').close();updateHistory()};
 renderHistory();
+
+
+function duBoisBsa(cm,kg){return 0.007184*Math.pow(cm,0.725)*Math.pow(kg,0.425)}
+function cockcroftGault(age,kg,scr,sex){return (140-age)*kg/(72*scr)*(sex==='female'?0.85:1)}
+function calvertDose(auc,kidney){return auc*(kidney+25)}
+function calcNumber(id,label,min,max){const raw=$(id).value.trim(),n=Number(raw);if(raw===''||!Number.isFinite(n)||n<min||n>max)throw Error(label+' phải từ '+min+' đến '+max+'.');return n}
+$('calcBsa').onclick=()=>{ $('bsaResult').classList.add('hidden');$('bsaError').textContent='';try{
+ let cm=calcNumber('bsaHeight','Chiều cao',0.01,1000)*($('bsaHeightUnit').value==='in'?2.54:1),kg=calcNumber('bsaWeight','Cân nặng',0.01,2000)*($('bsaWeightUnit').value==='lb'?0.45359237:1);
+ if(cm<30||cm>250||kg<1||kg>400)throw Error('Sau đổi đơn vị, nhập chiều cao 30–250 cm và cân nặng 1–400 kg.');
+ let p=Number($('bsaPrecision').value);$('bsaValue').textContent=duBoisBsa(cm,kg).toFixed(p)+' m²';$('bsaDetail').textContent='Dữ liệu quy đổi: '+cm.toFixed(2)+' cm · '+kg.toFixed(2)+' kg. Công thức Du Bois.';$('bsaResult').classList.remove('hidden');
+ }catch(e){$('bsaError').textContent=e.message}};
+$('calcCarbo').onclick=()=>{ $('carboResult').classList.add('hidden');$('carboWarning').classList.add('hidden');$('carboError').textContent='';try{
+ let age=calcNumber('carboAge','Tuổi',18,120);if(!Number.isInteger(age))throw Error('Tuổi phải là số nguyên.');
+ let sex=$('carboSex').value;if(!['female','male'].includes(sex))throw Error('Chọn hệ số giới tính trong công thức.');
+ let kg=calcNumber('carboWeight','Cân nặng',0.01,2000)*($('carboWeightUnit').value==='lb'?0.45359237:1);if(kg<20||kg>400)throw Error('Cân nặng sau đổi đơn vị phải từ 20 đến 400 kg.');
+ let scr=calcNumber('carboCreat','Creatinin',0.001,10000)/($('carboCreatUnit').value==='umol'?88.4:1);if(scr<0.1||scr>30)throw Error('Creatinin sau đổi đơn vị phải từ 0,1 đến 30 mg/dL. Kiểm tra đơn vị.');
+ let auc=calcNumber('carboAuc','AUC mục tiêu',0.1,15),crcl=cockcroftGault(age,kg,scr,sex),dose=calvertDose(auc,crcl);
+ if(!Number.isFinite(dose)||dose<=0)throw Error('Không tính được kết quả hợp lệ. Kiểm tra dữ liệu.');
+ $('carboDose').textContent=dose.toFixed(1)+' mg';$('carboCrcl').textContent=crcl.toFixed(2)+' mL/phút';
+ $('carboDetail').textContent='AUC '+auc+' × ('+crcl.toFixed(2)+' + 25) → '+dose.toFixed(1)+' mg. Dữ liệu: '+age+' tuổi; '+kg.toFixed(2)+' kg; creatinin '+scr.toFixed(3)+' mg/dL; hệ số '+(sex==='female'?'0,85':'1')+'. Giá trị hiển thị được làm tròn; phép tính dùng giá trị đầy đủ.';
+ const warnings=[];if(crcl<30)warnings.push('CrCl <30 mL/phút: cần đánh giá chuyên khoa và phương pháp xác định chức năng thận phù hợp; không dùng kết quả này như y lệnh.');
+ if(crcl>125)warnings.push('CrCl >125 mL/phút: bộ tính chưa áp trần. Kiểm tra phương pháp ước tính và quy định của phác đồ.');
+ if(scr<0.7)warnings.push('Creatinin thấp có thể làm CrCl ước tính cao, nhất là khi khối cơ thấp. Bộ tính không tự nâng creatinin.');
+ if(warnings.length){$('carboWarning').textContent=warnings.join(' ');$('carboWarning').classList.remove('hidden')}
+ $('carboResult').classList.remove('hidden');
+ }catch(e){$('carboError').textContent=e.message}};
+for(const name of ['bsa','carbo'])$(name+'Card').querySelectorAll('input,select').forEach(el=>{const clear=()=>{$(name+'Result').classList.add('hidden');$(name+'Error').textContent=''};el.addEventListener('input',clear);el.addEventListener('change',clear)});
 
 </script></body></html>
