@@ -183,7 +183,7 @@ $('theme').onclick=()=>{let dark=document.documentElement.dataset.theme==='dark'
 function setTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'☀ Sáng':'☾ Tối';try{localStorage.setItem('obtheme',t)}catch{}}
 $('theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 try{setTheme(localStorage.getItem('obtheme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))}catch{setTheme('light')}
-for(const name of ['preg','bmi','bsa','notes','history','study']){$('tab-'+name).onclick=()=>{for(const n of ['preg','bmi','bsa','notes','history']){$(n).classList.toggle('hidden',n!==name);$('tab-'+n).setAttribute('aria-selected',String(n===name));}}}
+for(const name of ['preg','bmi','bsa','notes','history','study']){$('tab-'+name).onclick=()=>{for(const n of ['preg','bmi','bsa','notes','history','study']){$(n).classList.toggle('hidden',n!==name);$('tab-'+n).setAttribute('aria-selected',String(n===name));}}}
 $('calcBmi').onclick=()=>{let kg=Number($('weight').value),cm=Number($('height').value);$('bmiResult').classList.add('hidden');if(!Number.isFinite(kg)||!Number.isFinite(cm)||kg<20||kg>400||cm<100||cm>250){$('bmiError').textContent='Nhập cân nặng 20–400 kg và chiều cao 100–250 cm.';return}let b=kg*10000/(cm*cm);$('bmiError').textContent='';$('bmiValue').textContent=b.toFixed(2);$('bmiClass').textContent=b<18.5?'Thiếu cân':b<25?'Bình thường':b<30?'Thừa cân':b<35?'Béo phì độ I':b<40?'Béo phì độ II':'Béo phì độ III';$('bmiResult').classList.remove('hidden')};
 let installPrompt;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e});
