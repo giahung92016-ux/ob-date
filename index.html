@@ -58,6 +58,15 @@ footer{font-size:12px;color:var(--muted);text-align:center;margin-top:24px}
 @media(max-width:450px){.tabs button{font-size:13px;padding:12px 10px}.unit-input{grid-template-columns:minmax(0,1fr) 95px}}
 
 #study .study-root{padding:0} #study .bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}#study .bar input{flex:1;min-width:130px}#study .item{border:1px solid var(--line);border-radius:13px;padding:12px;margin:9px 0}#study .item b{display:block;margin-bottom:5px}#study .item small{color:var(--muted)}#study .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}#study .links a{padding:8px 10px;border-radius:9px;background:#147d78;color:white;text-decoration:none;font-size:13px}#study .links a:nth-child(2){background:#b63838}#study .links a:nth-child(3){background:#52628e}#study .muted{color:var(--muted);font-size:13px}#study label{display:flex;gap:9px;align-items:center}#study input[type=checkbox]{width:19px;height:19px;accent-color:#147d78}#study #progress{font-weight:700}
+
+/* Study tab: inherit OB Date theme, avoid light-only text on dark backgrounds */
+#study,#study .study-root,#study .study-root h2,#study .study-root p,#study .study-root b,#study .study-root span,#study .study-root label,#study .study-root #progress{color:var(--text)!important}
+#study .study-root .muted,#study .study-root small{color:var(--muted)!important}
+#study .study-root input,#study .study-root select{color:var(--text)!important;background:var(--card)!important;border-color:var(--line)!important}
+#study .study-root input::placeholder{color:var(--muted)!important;opacity:1}
+#study .study-root option{background:var(--card);color:var(--text)}
+#study .study-root .item{background:var(--card);border-color:var(--line)}
+#study .study-root .links a{color:#fff!important}
 </style>
 </head>
 <body><div class="wrap">
